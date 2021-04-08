@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT"
+#issueTrackerURL=""
+
+[[mods]]
+    modId="create_ponder_wonder"
+    version="${file.jarVersion}"
+    displayName="Create Ponder Wonder"
+    #updateJSONURL=""
+    authors="Oshgnackgnak, Grimmauld"
+    description='''
+Exports Create ponders to disk.
+'''
+
+[[dependencies.create_ponder_wonder]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34.1.42,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.create_ponder_wonder]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.3,1.17,)"
+    ordering="NONE"
+    side="BOTH"
