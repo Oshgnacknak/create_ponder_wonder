@@ -18,15 +18,21 @@ import java.util.function.Consumer;
 
 public class RenderUtils {
 
+    private static final double SCALE = 1;
+    private static final int WIDTH = 720;
+    private static final int HEIGHT = 480;
+    private static final double Z_DISTANCE = 1500;
+    private static final boolean INCLUDE_FRAME = false;
+
     private RenderUtils() {}
 
-    public static void addRenderJob(int width, int height, double scale, Consumer<MatrixStack> renderFunc, Path imagePath, boolean includeFrame) {
-        Minecraft.getInstance().field_213275_aU.add(() -> render(width, height, scale, renderFunc, imagePath, includeFrame));
+    public static void addRenderJob(Consumer<MatrixStack> renderFunc, Path imagePath) {
+        Minecraft.getInstance().field_213275_aU.add(() -> render(renderFunc, imagePath));
     }
 
-    public static void render(int width, int height, double scale, Consumer<MatrixStack> renderFunc, Path imagePath, boolean includeFrame) {
-        int realWidth = (int) Math.round(scale * width);
-        int realHeight = (int) Math.round(scale * height);
+    public static void render(Consumer<MatrixStack> renderFunc, Path imagePath) {
+        int realWidth = (int) Math.round(SCALE * WIDTH);
+        int realHeight = (int) Math.round(SCALE * HEIGHT);
 
         boolean tooLarge = false;
         int maxTextureSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE);
@@ -54,13 +60,16 @@ public class RenderUtils {
         if (tooLarge) {
             RenderSystem.ortho(0.0D, 512, 512, 0.0D, 1000.0D, 3000.0D);
         } else {
-            RenderSystem.ortho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
+            RenderSystem.ortho(0.0D, WIDTH, HEIGHT, 0.0D, 1000.0D, 3000.0D);
         }
         RenderSystem.matrixMode(GL11.GL_MODELVIEW);
         RenderSystem.loadIdentity();
 
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.translate(0, 0, -2000);
+        matrixStack.translate(
+            WIDTH / 2.0,
+            HEIGHT / 2.0,
+            -Z_DISTANCE);
         net.minecraft.client.renderer.RenderHelper.enableGuiDepthLighting();
 
         IRenderTypeBuffer buffer = Minecraft.getInstance().getBufferBuilders().getEntityVertexConsumers();
@@ -74,9 +83,9 @@ public class RenderUtils {
                 "maximum texture size",
                 "of " + maxTextureSize,
                 "this image would have had a width",
-                "of " + (int) Math.round(scale * width),
+                "of " + (int) Math.round(SCALE * WIDTH),
                 "and a height",
-                "of " + (int) Math.round(scale * height),
+                "of " + (int) Math.round(SCALE * HEIGHT),
                 "which is too large.",
                 "To fix this lower the scale in",
                 "the config."};
@@ -95,8 +104,8 @@ public class RenderUtils {
 
         NativeImage img = ScreenShotHelper.createScreenshot(realWidth, realHeight, fb);
 
-        if (includeFrame && !tooLarge) {
-            applyFrame(img, width, height, scale);
+        if (INCLUDE_FRAME && !tooLarge) {
+            applyFrame(img, WIDTH, HEIGHT, SCALE);
         }
 
         try {

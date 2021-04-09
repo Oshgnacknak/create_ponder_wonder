@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 public class DumpPonsersCommand implements Command<CommandSource> {
 
-    private static final double SCALE = 1;
     private static final int MAX_FRAMES = 10;
+    private static final long MAX_PONDERS = 1;
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
@@ -30,13 +30,14 @@ public class DumpPonsersCommand implements Command<CommandSource> {
         List<PonderWonderUI> ponderUIs =
             PonderIndexer
             .getPonders()
+            .limit(MAX_PONDERS)
             .map(PonderWonderUI::new)
             .collect(Collectors.toList());
 
-        for (int frame = 0; frame < MAX_FRAMES; frame++) {
-            for (PonderWonderUI ponderUI : ponderUIs) {
+        for (PonderWonderUI ponderUI : ponderUIs) {
+            for (int frame = 0; frame < MAX_FRAMES; frame++) {
                 renderPonderScene(path, ponderUI, frame);
-                ponderUI.getActiveScene().getWorld().tick();
+                ponderUI.getActiveScene().tick();
             }
         }
         return 0;
@@ -48,16 +49,12 @@ public class DumpPonsersCommand implements Command<CommandSource> {
                 basePath,
                 CreatePonderWonder.MODID,
                 ponderWonderUI.getActiveScene().getString("out"),
-                String.format("%3d.png", frame));
+                String.format("%06d.png", frame));
             Files.createDirectories(path.getParent());
 
             RenderUtils.addRenderJob(
-                Minecraft.getInstance().getWindow().getWidth(),
-                Minecraft.getInstance().getWindow().getHeight(),
-                SCALE,
                 ponderWonderUI::ponderWonderRenderWindow,
-                path,
-                false);
+                path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
