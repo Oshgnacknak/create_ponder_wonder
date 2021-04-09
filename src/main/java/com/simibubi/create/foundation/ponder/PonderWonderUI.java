@@ -14,8 +14,8 @@ public class PonderWonderUI extends PonderUI {
         this.textRenderer = Minecraft.getInstance().fontRenderer;
         init();
     }
-    public void ponderWonderRenderWindow(MatrixStack ms) {
+    public void ponderWonderRenderWindow(MatrixStack ms, float partialTicks) {
         RenderSystem.enableBlend();
-        renderWindow(ms, -10, -10, 0);
+        renderVisibleScenes(ms, -10, -10, partialTicks);
     }
 }
