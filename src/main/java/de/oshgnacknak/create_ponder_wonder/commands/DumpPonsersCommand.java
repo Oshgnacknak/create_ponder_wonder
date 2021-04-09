@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class DumpPonsersCommand implements Command<CommandSource> {
 
     private static final int FPS = 60;
-    private static final int MAX_FRAMES = FPS*3;
+    private static final int MAX_FRAMES = 3;
     private static final long MAX_PONDERS = 1;
 
     @Override
@@ -42,7 +42,7 @@ public class DumpPonsersCommand implements Command<CommandSource> {
     private void renderPonderUI(String basePath, PonderWonderUI ponderWonderUI) {
         try {
             for (int frame = 0; frame < MAX_FRAMES; frame++) {
-                Promise<NativeImage> promise = renderUI(ponderWonderUI, frame);
+                Promise<NativeImage> promise = renderFrame(ponderWonderUI, frame);
                 NativeImage img = promise.get();
 
                 Path path = Paths.get(
@@ -63,7 +63,7 @@ public class DumpPonsersCommand implements Command<CommandSource> {
         }
     }
 
-    private Promise<NativeImage> renderUI(PonderWonderUI ponderWonderUI, int frame) {
+    private Promise<NativeImage> renderFrame(PonderWonderUI ponderWonderUI, int frame) {
         Promise<NativeImage> promise = GlobalEventExecutor.INSTANCE.newPromise();
 
         float pt = (frame % FPS) / (FPS / 3.0f);

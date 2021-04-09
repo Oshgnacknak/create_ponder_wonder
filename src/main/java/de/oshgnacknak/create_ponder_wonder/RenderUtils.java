@@ -15,10 +15,9 @@ import java.util.function.Consumer;
 public class RenderUtils {
 
     private static final double SCALE = 1;
-    private static final int WIDTH = 720;
-    private static final int HEIGHT = 480;
-    private static final double Z_DISTANCE = 1500;
-    private static final boolean INCLUDE_FRAME = false;
+    private static final int WIDTH = 1920;
+    private static final int HEIGHT = 1080;
+    private static final double Z_DISTANCE = 1400;
 
     private RenderUtils() {}
 
@@ -61,13 +60,7 @@ public class RenderUtils {
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
 
-        NativeImage img = ScreenShotHelper.createScreenshot(realWidth, realHeight, fb);
-
-        if (INCLUDE_FRAME) {
-            applyFrame(img);
-        }
-
-        return img;
+        return ScreenShotHelper.createScreenshot(realWidth, realHeight, fb);
     }
 
     private static void testForValidSize(int realWidth, int realHeight) {
@@ -79,32 +72,6 @@ public class RenderUtils {
                 realWidth,
                 realHeight));
         }
-    }
-
-    private static void applyFrame(NativeImage img) {
-        img.fillAreaRGBA(scale(0), scale(0), scale(2), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(0), scale(1), scale(1), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(WIDTH - 2), scale(0), scale(2), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(WIDTH - 1), scale(1), scale(1), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(0), scale(HEIGHT - 1), scale(2), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(0), scale(HEIGHT - 2), scale(1), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(WIDTH - 2), scale(HEIGHT - 1), scale(2), scale(1), 0x00000000);
-        img.fillAreaRGBA(scale(WIDTH - 1), scale(HEIGHT - 2), scale(1), scale(1), 0x00000000);
-
-        img.fillAreaRGBA(scale(1), scale(1), scale(1), scale(1), 0xFF999999);
-        img.fillAreaRGBA(scale(WIDTH - 2), scale(1), scale(1), scale(1), 0xFF999999);
-        img.fillAreaRGBA(scale(1), scale(HEIGHT - 2), scale(1), scale(1), 0xFF999999);
-        img.fillAreaRGBA(scale(WIDTH - 2), scale(HEIGHT - 2), scale(1), scale(1), 0xFF999999);
-
-        img.fillAreaRGBA(scale(2), scale(0), scale(WIDTH - 4), scale(1), 0xFF999999);
-        img.fillAreaRGBA(scale(2), scale(HEIGHT - 1), scale(WIDTH - 4), scale(1), 0xFF999999);
-        img.fillAreaRGBA(scale(0), scale(2), scale(1), scale(HEIGHT - 4), 0xFF999999);
-        img.fillAreaRGBA(scale(WIDTH - 1), scale(2), scale(1), scale(HEIGHT - 4), 0xFF999999);
-
-        img.fillAreaRGBA(scale(2), scale(1), scale(WIDTH - 4), scale(1), 0xFFD8D8D8);
-        img.fillAreaRGBA(scale(2), scale(HEIGHT - 2), scale(WIDTH - 4), scale(1), 0xFFB3B3B3);
-        img.fillAreaRGBA(scale(1), scale(2), scale(1), scale(HEIGHT - 4), 0xFFD8D8D8);
-        img.fillAreaRGBA(scale(WIDTH - 2), scale(2), scale(1), scale(HEIGHT - 4), 0xFFB3B3B3);
     }
 
     private static int scale(int value) {
