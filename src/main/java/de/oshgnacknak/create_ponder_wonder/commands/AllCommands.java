@@ -11,8 +11,12 @@ public class AllCommands {
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(
             literal("pw")
-            .then(argument("path",
-                StringArgumentType.greedyString()).executes(new DumpPonsersCommand()))
-        );
+            .then(literal("start")
+            .then(argument("path", StringArgumentType.greedyString())
+            .executes(new StartRenderingCommand()))));
+        event.getDispatcher().register(
+            literal("pw")
+            .then(literal("stop")
+            .executes(new StopRenderingCommand())));
     }
 }

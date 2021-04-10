@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ScreenShotHelper;
@@ -61,4 +60,5 @@ public class RenderUtils {
 
         return ScreenShotHelper.createScreenshot(WIDTH, HEIGHT, fb);
     }
+
 }
