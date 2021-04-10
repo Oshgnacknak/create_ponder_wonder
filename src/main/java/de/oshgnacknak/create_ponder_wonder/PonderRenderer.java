@@ -22,11 +22,11 @@ public class PonderRenderer {
 
     private static final int FPS = 60;
     private static final int MAX_FRAMES = 15;
-    private static final int MAX_PONDERS_AT_ONCE = 10;
+    private static final int MAX_PONDERS_AT_ONCE = 3;
 
-    private final Lock lock;
     private final BlockingQueue<PonderWonderUI> pondersToRender;
     private final AtomicInteger currentlyRendering;
+    private final Lock lock;
     private final Condition renderDone;
 
     private ExecutorService executorService;
@@ -35,9 +35,9 @@ public class PonderRenderer {
     private String basePath;
 
     public PonderRenderer() {
-        lock = new ReentrantLock();
         pondersToRender = new ArrayBlockingQueue<>(MAX_PONDERS_AT_ONCE);
         currentlyRendering = new AtomicInteger();
+        lock = new ReentrantLock();
         renderDone = lock.newCondition();
     }
 
@@ -87,9 +87,12 @@ public class PonderRenderer {
         try {
             while (rendering) {
                 if (currentlyRendering.get() < MAX_PONDERS_AT_ONCE) {
-                    renderPonder(pondersToRender.take());
+                    PonderWonderUI ponder = pondersToRender.take();
+                    currentlyRendering.incrementAndGet();
+                    executorService.submit(() ->
+                        renderPonder(ponder));
                 } else {
-                    renderDone.wait();
+                    waitForRenderDone();
                 }
 
                 if (allEnqueued) {
@@ -105,11 +108,17 @@ public class PonderRenderer {
         }
     }
 
-    private void renderPonder(PonderWonderUI ponder) {
+    private void waitForRenderDone() throws InterruptedException {
         lock.lock();
-
         try {
-            currentlyRendering.incrementAndGet();
+            renderDone.await();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void renderPonder(PonderWonderUI ponder) {
+        try {
             Path path = renderFrames(ponder);
 
             CreatePonderWonder.chat("Finished rendering Ponder: " + path);
@@ -119,8 +128,16 @@ public class PonderRenderer {
             CreatePonderWonder.chat("Error: " + e.getMessage());
             CreatePonderWonder.LOGGER.error("Could not save image", e);
         } finally {
+            signalRenderDone();
+        }
+    }
+
+    private void signalRenderDone() {
+        lock.lock();
+        try {
             currentlyRendering.decrementAndGet();
             renderDone.signal();
+        } finally {
             lock.unlock();
         }
     }
