@@ -12,7 +12,7 @@ public class CreatePonderWonder {
     public static final String MODID = "create_ponder_wonder";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    public static final PonderRenderer PONDER_RENDERER = new PonderRenderer();
+    public static final PonderRenderScheduler PONDER_RENDERER = new PonderRenderScheduler();
 
     public CreatePonderWonder() {
         MinecraftForge.EVENT_BUS.addListener(AllCommands::register);
