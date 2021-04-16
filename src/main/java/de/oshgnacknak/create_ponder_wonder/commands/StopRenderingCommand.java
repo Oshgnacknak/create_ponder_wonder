@@ -8,7 +8,7 @@ import net.minecraft.command.CommandSource;
 public class StopRenderingCommand implements com.mojang.brigadier.Command<net.minecraft.command.CommandSource> {
 
     @Override
-    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    public int run(CommandContext<CommandSource> context) {
         CreatePonderWonder.PONDER_RENDERER.stop();
         return SINGLE_SUCCESS;
     }

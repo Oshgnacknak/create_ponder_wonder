@@ -1,6 +1,5 @@
 package de.oshgnacknak.create_ponder_wonder;
 
-import com.simibubi.create.content.contraptions.components.actors.SeatEntity;
 import com.simibubi.create.foundation.ponder.PonderScene;
 import com.simibubi.create.foundation.ponder.PonderWonderUI;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -8,9 +7,7 @@ import io.netty.util.concurrent.Promise;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.NativeImage;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
@@ -43,7 +40,7 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 
     @Override
     public boolean hasNext() {
-        return !ponder.isFinished();
+        return !ponder.isFinished() && frame < MAX_FRAMES;
     }
 
     @Override
@@ -74,5 +71,4 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
             throw new RuntimeException(e);
         }
     }
-
 }
