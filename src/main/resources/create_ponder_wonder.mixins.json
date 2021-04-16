@@ -1,9 +1,10 @@
 {
   "required": true,
-  "package": "de.oshganknak.create_ponder_wonder.mixin",
+  "package": "de.oshgnacknak.create_ponder_wonder.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "hackforge.refmap.json",
   "mixins": [
+    "PauseServerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

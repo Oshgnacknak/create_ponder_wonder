@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 public class PonderRenderScheduler {
 
+    private static final int GC_INTERVAL = 200;
+
     private ExecutorService executorService;
     private boolean rendering;
 
@@ -54,8 +56,10 @@ public class PonderRenderScheduler {
             for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
                 Path out = path.resolve(String.format("%06d.png", result.frame));
                 result.image.write(out);
-                System.gc();
+                if (result.frame % GC_INTERVAL == 0)
+                    System.gc();
             }
+            System.gc();
 
             CreatePonderWonder.chat("Finished rendering Ponder: " + path);
             CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", path);
@@ -103,5 +107,9 @@ public class PonderRenderScheduler {
 
         CreatePonderWonder.LOGGER.info("Stopped rendering ponders");
         CreatePonderWonder.chat("Stopped rendering ponders");
+    }
+
+    public boolean isRendering() {
+        return rendering;
     }
 }
