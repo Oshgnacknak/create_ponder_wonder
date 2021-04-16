@@ -2,16 +2,12 @@ package de.oshgnacknak.create_ponder_wonder;
 
 import com.simibubi.create.foundation.ponder.PonderRegistry;
 import com.simibubi.create.foundation.ponder.PonderScene;
-import io.netty.util.concurrent.GlobalEventExecutor;
-import io.netty.util.concurrent.Promise;
-import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,29 +49,20 @@ public class PonderRenderScheduler {
 	}
 
 	private void saveFrames(PonderScene ponder, String basePath) {
-		Promise<?> promise = GlobalEventExecutor.INSTANCE.newPromise();
-		Minecraft.getInstance().field_213275_aU.add(() -> {
-			try {
-				Path path = getOutPath(ponder, basePath);
-
-				for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
-					Path out = path.resolve(String.format("%06d.png", result.frame));
-					result.image.write(out);
-					if (result.frame % GC_INTERVAL == 0)
-						System.gc();
-				}
-				System.gc();
-				promise.setSuccess(null);
-
-				CreatePonderWonder.chat("Finished rendering Ponder: " + path);
-				CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", path);
-			} catch (Exception e) {
-				promise.setFailure(e);
-			}
-		});
 		try {
-			promise.get();
-		} catch (InterruptedException | ExecutionException e) {
+			Path path = getOutPath(ponder, basePath);
+
+			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
+				Path out = path.resolve(String.format("%06d.png", result.frame));
+				result.image.write(out);
+				if (result.frame % GC_INTERVAL == 0)
+					System.gc();
+			}
+			System.gc();
+
+			CreatePonderWonder.chat("Finished rendering Ponder: " + path);
+			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", path);
+		} catch (Exception e) {
 			CreatePonderWonder.chat("Error: " + e.getMessage());
 			CreatePonderWonder.LOGGER.error("Could not save image", e);
 			e.printStackTrace();

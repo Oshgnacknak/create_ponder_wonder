@@ -2,19 +2,25 @@ package de.oshgnacknak.create_ponder_wonder;
 
 import com.simibubi.create.foundation.ponder.PonderScene;
 import com.simibubi.create.foundation.ponder.PonderWonderUI;
+import io.netty.util.concurrent.GlobalEventExecutor;
+import io.netty.util.concurrent.Promise;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.NativeImage;
 
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
 
 	private static final int FPS = 60;
-	private static final int MAX_FRAMES = Integer.MAX_VALUE; // FPS*3;
+	private static final int MAX_FRAMES = Integer.MAX_VALUE;
+
 	private final PonderWonderUI ponder;
 	private int frame;
+
 	public PonderRenderer(PonderScene ponder) {
 		this.ponder = new PonderWonderUI(ponder);
-		this.frame = -1;
+		this.frame = 0;
 	}
 
 	@Override
@@ -29,16 +35,29 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 
 	@Override
 	public RenderResult next() {
-		float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
-		NativeImage img = RenderUtils.render(ms ->
-			ponder.ponderWonderRenderWindow(ms, pt));
+		Promise<RenderResult> promise = GlobalEventExecutor.INSTANCE.newPromise();
 
-		if (frame % 3 == 2) {
-			ponder.tick();
+		Minecraft.getInstance().field_213275_aU.add(() -> {
+		    try {
+				float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
+				NativeImage img = RenderUtils.render(ms ->
+					ponder.ponderWonderRenderWindow(ms, pt));
+				promise.setSuccess(new RenderResult(img, frame));
+
+				if (frame % 3 == 2) {
+					ponder.tick();
+				}
+				frame++;
+			} catch (Throwable e) {
+				promise.setFailure(e);
+			}
+		});
+
+		try {
+			return promise.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException(e);
 		}
-		frame++;
-
-		return new RenderResult(img, frame);
 	}
 
 	public static class RenderResult {

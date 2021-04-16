@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 
 public class RenderUtils {
 
-    private static final double SCALE = 5;
-    private static final int WIDTH = 1920;
-    private static final int HEIGHT = 1080;
-    private static final double Z_DISTANCE = 1400;
+    public static final double SCALE = 5;
+    public static final int WIDTH = 1920;
+    public static final int HEIGHT = 1080;
+    public static final double Z_DISTANCE = 1400;
 
     private RenderUtils() {}
 
@@ -36,19 +36,17 @@ public class RenderUtils {
 
         RenderSystem.matrixMode(GL11.GL_PROJECTION);
         RenderSystem.loadIdentity();
-        RenderSystem.ortho(0.0d,
-            WIDTH / SCALE,
-            HEIGHT / SCALE,
+        RenderSystem.ortho(
+            0.0d,
+            WIDTH,
+            HEIGHT,
             0.0d, 0,
             3000.0d);
         RenderSystem.matrixMode(GL11.GL_MODELVIEW);
         RenderSystem.loadIdentity();
 
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.translate(
-            WIDTH / (SCALE * 2.0),
-            HEIGHT / (SCALE * 2.0),
-            -Z_DISTANCE);
+        matrixStack.translate(0, 0, -Z_DISTANCE);
         net.minecraft.client.renderer.RenderHelper.enableGuiDepthLighting();
 
         RenderSystem.defaultAlphaFunc();
