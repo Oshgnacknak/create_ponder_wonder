@@ -21,13 +21,13 @@ public class RenderUtils {
     private RenderUtils() {}
 
     public static NativeImage render(Consumer<MatrixStack> renderFunc) {
-        Framebuffer fb = new Framebuffer(WIDTH, HEIGHT, true, Minecraft.IS_RUNNING_ON_MAC);
+        Framebuffer fb = new Framebuffer(WIDTH, HEIGHT, true, Minecraft.ON_OSX);
 
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.clear(16640, Minecraft.IS_RUNNING_ON_MAC);
-        fb.bindFramebuffer(true);
-        FogRenderer.setFogBlack();
+        RenderSystem.clear(16640, Minecraft.ON_OSX);
+        fb.bindWrite(true);
+        FogRenderer.setupNoFog();
 
         RenderSystem.enableTexture();
         RenderSystem.enableCull();
@@ -47,7 +47,7 @@ public class RenderUtils {
 
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(0, 0, -Z_DISTANCE);
-        net.minecraft.client.renderer.RenderHelper.enableGuiDepthLighting();
+        net.minecraft.client.renderer.RenderHelper.setupFor3DItems();
 
         RenderSystem.defaultAlphaFunc();
 
@@ -56,7 +56,7 @@ public class RenderUtils {
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
 
-        return ScreenShotHelper.createScreenshot(WIDTH, HEIGHT, fb);
+        return ScreenShotHelper.takeScreenshot(WIDTH, HEIGHT, fb);
     }
 
 }

@@ -10,8 +10,8 @@ public class PonderWonderUI extends PonderUI {
 
     public PonderWonderUI(PonderScene scene) {
         super(Collections.singletonList(scene));
-        this.client = Minecraft.getInstance();
-        this.textRenderer = Minecraft.getInstance().fontRenderer;
+        this.minecraft = Minecraft.getInstance();
+        this.font = Minecraft.getInstance().font;
         init();
     }
 

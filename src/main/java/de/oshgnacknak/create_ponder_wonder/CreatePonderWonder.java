@@ -20,7 +20,7 @@ public class CreatePonderWonder {
 
     public static void chat(String msg) {
         if (Minecraft.getInstance().player != null) {
-            Minecraft.getInstance().player.sendChatMessage(msg);
+            Minecraft.getInstance().player.chat(msg);
         }
     }
 }

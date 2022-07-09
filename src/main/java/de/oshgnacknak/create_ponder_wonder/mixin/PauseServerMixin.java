@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
 @Mixin(MinecraftServer.class)
 public class PauseServerMixin {
 
-	@Inject(at = @At(value = "INVOKE"), method = "Lnet/minecraft/server/MinecraftServer;updateTimeLightAndEntities(Ljava/util/function/BooleanSupplier;)V", cancellable = true)
+	// @Inject(at = @At(value = "INVOKE"), method = "Lnet/minecraft/server/MinecraftServer;updateTimeLightAndEntities(Ljava/util/function/BooleanSupplier;)V", cancellable = true)
 	private void tick(BooleanSupplier sup, CallbackInfo ci) {
 		if (CreatePonderWonder.PONDER_RENDERER.isRendering())
 			ci.cancel();

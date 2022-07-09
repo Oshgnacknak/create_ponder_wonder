@@ -37,7 +37,7 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 	public RenderResult next() {
 		Promise<RenderResult> promise = GlobalEventExecutor.INSTANCE.newPromise();
 
-		Minecraft.getInstance().field_213275_aU.add(() -> {
+		Minecraft.getInstance().progressTasks.add(() -> {
 		    try {
 				float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
 				NativeImage img = RenderUtils.render(ms ->

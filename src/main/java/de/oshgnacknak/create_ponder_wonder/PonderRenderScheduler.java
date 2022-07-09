@@ -54,7 +54,7 @@ public class PonderRenderScheduler {
 
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				Path out = path.resolve(String.format("%06d.png", result.frame));
-				result.image.write(out);
+				result.image.writeToFile(out);
 				if (result.frame % GC_INTERVAL == 0)
 					System.gc();
 			}

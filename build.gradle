@@ -7,7 +7,7 @@ buildscript {
         maven { url='https://dist.creeper.host/Sponge/maven' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
@@ -25,7 +25,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'official', version: minecraft_version
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -96,7 +96,7 @@ repositories {
         url "https://maven.mcmoddev.com"
     }
     maven {
-        url "http://mmd.blamejared.com/"
+        url "https://mmd.blamejared.com/"
     }
     maven {
         name = "MelanX Maven"
@@ -108,8 +108,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("curse.maven:create-328085:3278516")
     runtimeOnly fg.deobf("curse.maven:fpsred-280294:3103648")
-    compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-1.0.15")
-    annotationProcessor 'org.spongepowered:mixin:0.8:processor'
+    // compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-1.0.15")
+    annotationProcessor 'org.spongepowered:mixin:0.8.1:processor'
 }
 
 jar {
