@@ -1,11 +1,10 @@
 package de.oshgnacknak.create_ponder_wonder;
 
 import com.simibubi.create.foundation.ponder.PonderScene;
-import com.simibubi.create.foundation.ponder.PonderWonderUI;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.Promise;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;

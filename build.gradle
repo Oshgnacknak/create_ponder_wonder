@@ -21,7 +21,7 @@ version = "mc${minecraft_version}_v${mod_version}"
 group = "de.oshganknak.${modid}"
 archivesBaseName = "${modid}"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
@@ -33,41 +33,8 @@ minecraft {
             workingDirectory project.file('run')
             arg '-mixin.config=create_ponder_wonder.mixins.json'
             jvmArgs "-Dmixin.env.disableRefMap=true"
-            jvmArgs '-XX:+UnlockCommercialFeatures'
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
-
-            mods {
-                create_ponder_wonder {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            arg '-mixin.config=create_ponder_wonder.mixins.json'
-            jvmArgs "-Dmixin.env.disableRefMap=true"
-            jvmArgs '-XX:+UnlockCommercialFeatures'
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                create_ponder_wonder {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            jvmArgs "-Dmixin.env.disableRefMap=true"
-            jvmArgs '-XX:+UnlockCommercialFeatures'
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-            property 'fml.earlyprogresswindow', 'false'
-
-            args '--mod', "create_ponder_wonder", '--all', '--output', file('src/generated/resources/')
 
             mods {
                 create_ponder_wonder {
@@ -80,37 +47,19 @@ minecraft {
 
 repositories {
     maven {
-        url "https://www.cursemaven.com"
-    }
-    maven {
-        url "https://dvs1.progwml6.com/files/maven"
-    }
-    maven {
         // tterrag
         url "https://maven.tterrag.com"
-    }
-    maven {
-        url "https://maven.blamejared.com"
-    }
-    maven {
-        url "https://maven.mcmoddev.com"
-    }
-    maven {
-        url "https://mmd.blamejared.com/"
-    }
-    maven {
-        name = "MelanX Maven"
-        url = "https://maven.melanx.de/"
     }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:create-328085:3278516")
-    runtimeOnly fg.deobf("curse.maven:fpsred-280294:3103648")
-    // compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-1.0.15")
-    annotationProcessor 'org.spongepowered:mixin:0.8.1:processor'
+    implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-0.6.3.81")
+    implementation fg.deobf("com.simibubi.create:Create:mc1.18.2_v0.5.0+130")
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
+
+compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {

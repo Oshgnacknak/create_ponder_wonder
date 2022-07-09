@@ -3,8 +3,9 @@ package de.oshgnacknak.create_ponder_wonder.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraftforge.event.RegisterCommandsEvent;
 
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+
 
 public class AllCommands {
 

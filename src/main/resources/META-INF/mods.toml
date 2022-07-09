@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[34,)"
+loaderVersion="[40,)"
 license="MIT"
 #issueTrackerURL=""
 
@@ -16,13 +16,13 @@ Exports Create ponders to disk.
 [[dependencies.create_ponder_wonder]]
     modId="forge"
     mandatory=true
-    versionRange="[34.1.42,)"
+    versionRange="[40.1.0,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.create_ponder_wonder]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,1.17,)"
+    versionRange="[1.18.2,1.19,)"
     ordering="NONE"
     side="BOTH"

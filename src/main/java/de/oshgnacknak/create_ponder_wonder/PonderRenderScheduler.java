@@ -35,7 +35,7 @@ public class PonderRenderScheduler {
 	}
 
 	private void renderAllPonders(String basePath) {
-		PonderRegistry.all
+		PonderRegistry.ALL
 			.values()
 			.stream()
 			.map(PonderRegistry::compile)
