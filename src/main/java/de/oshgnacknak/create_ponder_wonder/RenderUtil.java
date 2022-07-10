@@ -13,50 +13,48 @@ import net.minecraft.client.renderer.FogRenderer;
 
 import java.util.function.Consumer;
 
-public class RenderUtils {
+public class RenderUtil {
 
 	public static final float SCALE = 3;
 	public static final int WIDTH = 1920;
 	public static final int HEIGHT = 1080;
-	public static final double Z_DISTANCE = 5000;
+	private final RenderTarget renderTarget;
+	private final PoseStack ponderPoseStack;
+	private final Matrix4f viewField;
 
-	private RenderUtils() {
+	public RenderUtil() {
+		renderTarget = new TextureTarget(WIDTH, HEIGHT, true, Minecraft.ON_OSX);
+		renderTarget.setClearColor(0, 0, 0, 0);
+		ponderPoseStack = new PoseStack();
+		ponderPoseStack.scale(SCALE, SCALE, SCALE);
+		viewField = Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 0, 10000);
 	}
 
-	public static NativeImage render(Consumer<PoseStack> renderFunc) {
-		int realWidth = Math.round(1 * WIDTH);
-		int realHeight = Math.round(1 * HEIGHT);
-
-		RenderTarget fb = new TextureTarget(realWidth, realHeight, true, Minecraft.ON_OSX);
-		fb.setClearColor(0, 0, 0, 0);
-		fb.clear(true);
-
+	public NativeImage render(Consumer<PoseStack> renderFunc) {
+		renderTarget.clear(true);
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
 
 		RenderSystem.enableBlend();
 		RenderSystem.clear(0x4100, Minecraft.ON_OSX);
-		fb.bindWrite(true);
+		renderTarget.bindWrite(true);
 		FogRenderer.setupNoFog();
 
 		RenderSystem.enableTexture();
 		RenderSystem.enableCull();
 
-		RenderSystem.viewport(0, 0, realWidth, realHeight);
-
+		RenderSystem.viewport(0, 0, WIDTH, HEIGHT);
 		modelViewStack.setIdentity();
 		modelViewStack.translate(0, 0, -5000);
 		RenderSystem.applyModelViewMatrix();
-		RenderSystem.setProjectionMatrix(Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 0, 10000));
+		RenderSystem.setProjectionMatrix(viewField);
 
-		PoseStack poseStack = new PoseStack();
-		poseStack.scale(SCALE, SCALE, SCALE);
 		Lighting.setupFor3DItems();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 
 		try {
-			renderFunc.accept(poseStack);
+			renderFunc.accept(ponderPoseStack);
 		} catch (RuntimeException e) {
 			CreatePonderWonder.LOGGER.error("Could not print ponder: {}", e.getMessage());
 		}
@@ -64,16 +62,6 @@ public class RenderUtils {
 		RenderSystem.disableBlend();
 		modelViewStack.popPose();
 		RenderSystem.applyModelViewMatrix();
-
-		return Screenshot.takeScreenshot(fb);
-	}
-
-	// See Screenshot.takeScreenshot
-	private static NativeImage takeNonOpaqueScreenshot(RenderTarget fb) {
-		NativeImage img = new NativeImage(fb.width, fb.height, false);
-		RenderSystem.bindTexture(fb.getColorTextureId());
-		img.downloadTexture(0, false);
-		img.flipY();
-		return img;
+		return Screenshot.takeScreenshot(renderTarget);
 	}
 }

@@ -46,7 +46,8 @@ public class PonderRenderScheduler {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering)
 					return;
-				result.image.writeToFile(path.resolve(String.format("%06d.png", result.frame)));
+				if(result.image != null)
+					result.image.writeToFile(path.resolve(String.format("%06d.png", result.frame)));
 			}
 			System.gc();
 

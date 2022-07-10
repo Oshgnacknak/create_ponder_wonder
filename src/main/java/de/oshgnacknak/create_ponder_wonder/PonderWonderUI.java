@@ -41,7 +41,7 @@ public class PonderWonderUI {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		ui.init(Minecraft.getInstance(), (int) (RenderUtils.WIDTH / RenderUtils.SCALE), (int) (RenderUtils.HEIGHT / RenderUtils.SCALE));
+		ui.init(Minecraft.getInstance(), (int) (RenderUtil.WIDTH / RenderUtil.SCALE), (int) (RenderUtil.HEIGHT / RenderUtil.SCALE));
 	}
 
 	public void ponderWonderRenderWindow(PoseStack ms, float partialTicks) {
