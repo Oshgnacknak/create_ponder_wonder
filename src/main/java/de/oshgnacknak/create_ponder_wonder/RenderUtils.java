@@ -15,10 +15,10 @@ import java.util.function.Consumer;
 
 public class RenderUtils {
 
-	public static final float SCALE = 5;
+	public static final float SCALE = 3;
 	public static final int WIDTH = 1920;
 	public static final int HEIGHT = 1080;
-	public static final double Z_DISTANCE = 2000;
+	public static final double Z_DISTANCE = 5000;
 
 	private RenderUtils() {
 	}
@@ -45,11 +45,12 @@ public class RenderUtils {
 		RenderSystem.viewport(0, 0, realWidth, realHeight);
 
 		modelViewStack.setIdentity();
-		modelViewStack.translate(0, 0, -Z_DISTANCE);
+		modelViewStack.translate(0, 0, -5000);
 		RenderSystem.applyModelViewMatrix();
-		RenderSystem.setProjectionMatrix(Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 1000, 3000));
+		RenderSystem.setProjectionMatrix(Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 0, 10000));
 
 		PoseStack poseStack = new PoseStack();
+		poseStack.scale(SCALE, SCALE, SCALE);
 		Lighting.setupFor3DItems();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
