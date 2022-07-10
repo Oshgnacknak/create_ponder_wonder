@@ -19,14 +19,12 @@ public class RenderUtil {
 	public static final int WIDTH = 1920;
 	public static final int HEIGHT = 1080;
 	private final RenderTarget renderTarget;
-	private final PoseStack ponderPoseStack;
 	private final Matrix4f viewField;
 
 	public RenderUtil() {
 		renderTarget = new TextureTarget(WIDTH, HEIGHT, true, Minecraft.ON_OSX);
 		renderTarget.setClearColor(0, 0, 0, 0);
-		ponderPoseStack = new PoseStack();
-		ponderPoseStack.scale(SCALE, SCALE, SCALE);
+
 		viewField = Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 0, 10000);
 	}
 
@@ -53,6 +51,8 @@ public class RenderUtil {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 
+		PoseStack ponderPoseStack = new PoseStack();
+		ponderPoseStack.scale(SCALE, SCALE, SCALE);
 		try {
 			renderFunc.accept(ponderPoseStack);
 		} catch (RuntimeException e) {
