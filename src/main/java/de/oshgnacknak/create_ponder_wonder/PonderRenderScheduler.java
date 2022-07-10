@@ -8,15 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class PonderRenderScheduler {
-
-	private static final int GC_INTERVAL = 200;
-
-	private ExecutorService executorService;
 	private boolean rendering;
 
 	public void start(String basePath) {
@@ -26,7 +19,6 @@ public class PonderRenderScheduler {
 		}
 
 		rendering = true;
-		executorService = Executors.newSingleThreadExecutor();
 
 		CreatePonderWonder.LOGGER.info("Started rendering ponders");
 		CreatePonderWonder.chat("Started rendering ponders");
@@ -36,15 +28,14 @@ public class PonderRenderScheduler {
 
 	private void renderAllPonders(String basePath) {
 		PonderRegistry.ALL
-			.values()
-			.stream()
-			.map(PonderRegistry::compile)
-			.flatMap(List::stream)
-			.forEach(ponder -> saveFrames(ponder, basePath));
+				.values()
+				.stream()
+				.map(PonderRegistry::compile)
+				.flatMap(List::stream)
+				.forEach(ponder -> saveFrames(ponder, basePath));
 
 		CreatePonderWonder.LOGGER.info("All ponders rendered: {}", basePath);
 		CreatePonderWonder.chat("All ponders rendered: " + basePath);
-
 		finishRendering();
 	}
 
@@ -53,10 +44,9 @@ public class PonderRenderScheduler {
 			Path path = getOutPath(ponder, basePath);
 
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
-				Path out = path.resolve(String.format("%06d.png", result.frame));
-				result.image.writeToFile(out);
-				if (result.frame % GC_INTERVAL == 0)
-					System.gc();
+				if (!rendering)
+					return;
+				result.image.writeToFile(path.resolve(String.format("%06d.png", result.frame)));
 			}
 			System.gc();
 
@@ -70,12 +60,10 @@ public class PonderRenderScheduler {
 	}
 
 	private Path getOutPath(PonderScene ponder, String basePath) throws IOException {
-		Path path = Paths.get(
-			basePath,
-			CreatePonderWonder.MODID,
-			ponder.getString("out"));
-		Files.createDirectories(path);
-		return path;
+		return Files.createDirectories(Paths.get(
+				basePath,
+				CreatePonderWonder.MODID,
+				ponder.getString("out")));
 	}
 
 	public void stop() {
@@ -86,21 +74,10 @@ public class PonderRenderScheduler {
 
 		CreatePonderWonder.LOGGER.warn("Stopping rendering ponders abruptly");
 		CreatePonderWonder.chat("Stopping rendering ponders abruptly");
-
-		try {
-			executorService.shutdown();
-			while (!executorService.awaitTermination(3, TimeUnit.SECONDS)) {
-				executorService.shutdownNow();
-			}
-
-			finishRendering();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		finishRendering();
 	}
 
 	private void finishRendering() {
-		executorService = null;
 		rendering = false;
 		System.gc();
 

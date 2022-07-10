@@ -6,9 +6,9 @@ import net.minecraft.commands.CommandSourceStack;
 
 public class StopRenderingCommand implements com.mojang.brigadier.Command<net.minecraft.commands.CommandSourceStack> {
 
-    @Override
-    public int run(CommandContext<CommandSourceStack> context) {
-        CreatePonderWonder.PONDER_RENDERER.stop();
-        return SINGLE_SUCCESS;
-    }
+	@Override
+	public int run(CommandContext<CommandSourceStack> context) {
+		CreatePonderWonder.PONDER_RENDERER.stop();
+		return SINGLE_SUCCESS;
+	}
 }

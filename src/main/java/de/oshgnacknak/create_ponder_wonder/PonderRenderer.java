@@ -1,39 +1,49 @@
 package de.oshgnacknak.create_ponder_wonder;
 
-import com.simibubi.create.foundation.ponder.PonderScene;
-import io.netty.util.concurrent.GlobalEventExecutor;
-import io.netty.util.concurrent.Promise;
-import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.simibubi.create.foundation.ponder.PonderScene;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
 
 	private static final int FPS = 60;
-	private static final int MAX_FRAMES = Integer.MAX_VALUE;
 
 	private final PonderWonderUI ponder;
+	private final PonderScene ponderScene;
 	private int frame;
 
 	public PonderRenderer(PonderScene ponder) {
 		this.ponder = new PonderWonderUI(ponder);
+		ponderScene = ponder;
 		this.frame = 0;
 	}
 
 	@Override
 	public Iterator<RenderResult> iterator() {
-		return this;
+		return new PonderRenderer(ponderScene);
 	}
 
 	@Override
 	public boolean hasNext() {
-		return !ponder.isFinished() && frame < MAX_FRAMES;
+		return !ponder.isFinished();
 	}
 
 	@Override
 	public RenderResult next() {
+		float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
+		NativeImage img = RenderUtils.render(ms ->
+				ponder.ponderWonderRenderWindow(ms, pt));
+		RenderResult res = new RenderResult(img, frame);
+
+		if (frame % 3 == 2) {
+			ponder.tick();
+		}
+		frame++;
+		return res;
+
+		/*
+
 		Promise<RenderResult> promise = GlobalEventExecutor.INSTANCE.newPromise();
 
 		Minecraft.getInstance().progressTasks.add(() -> {
@@ -57,6 +67,7 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
 		}
+		 */
 	}
 
 	public static class RenderResult {
