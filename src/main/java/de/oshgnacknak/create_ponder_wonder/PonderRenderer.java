@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
 
-	private static final int FPS = 60;
+	public static final int FPS = 60;
 
 	private final PonderWonderUI ponder;
 	private final PonderScene ponderScene;

@@ -5,7 +5,7 @@ license="MIT"
 
 [[mods]]
     modId="create_ponder_wonder"
-    version="${file.jarVersion}"
+    version="0.0.2"
     displayName="Create Ponder Wonder"
     #updateJSONURL=""
     authors="Oshgnackgnak, Grimmauld"

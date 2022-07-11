@@ -2,7 +2,7 @@
   "required": true,
   "package": "de.oshgnacknak.create_ponder_wonder.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "hackforge.refmap.json",
+  "refmap": "create_ponder_wonder.refmap.json",
   "mixins": [
     "DataFixesManagerMixin",
     "PonderThemeCachingMixin",
