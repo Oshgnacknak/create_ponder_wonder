@@ -1,8 +1,8 @@
 package de.oshgnacknak.create_ponder_wonder;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.simibubi.create.foundation.ponder.PonderScene;
 
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
@@ -34,9 +34,8 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 	@Override
 	public RenderResult next() {
 		float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
-		NativeImage img = renderUtil.render(ms ->
-				ponder.ponderWonderRenderWindow(ms, pt));
-		RenderResult res = new RenderResult(img, frame);
+		RenderResult res = new RenderResult(renderUtil.render(ms ->
+				ponder.ponderWonderRenderWindow(ms, pt)), frame);
 
 		if (frame % 3 == 2) {
 			ponder.tick();
@@ -46,10 +45,10 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 	}
 
 	public static class RenderResult {
-		public final NativeImage image;
+		public final BufferedImage image;
 		public final int frame;
 
-		public RenderResult(NativeImage image, int frame) {
+		public RenderResult(BufferedImage image, int frame) {
 			this.image = image;
 			this.frame = frame;
 		}

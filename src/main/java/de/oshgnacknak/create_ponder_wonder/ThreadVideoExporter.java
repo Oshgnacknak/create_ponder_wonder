@@ -4,11 +4,8 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,16 +56,8 @@ public class ThreadVideoExporter implements AutoCloseable {
 
 	private void encodeFrameToVideo(PonderRenderer.RenderResult result) {
 		if (result.image == null) return;
-		try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(190000)) {
-			result.image.writeToChannel(channel);
-			BufferedImage image = ImageIO.read(new ByteArrayInputStream(channel.array(), 0, (int) channel.size()));
-			if (image == null) return;
-			image = convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
-			synchronized (writer) {
-				writer.encodeVideo(0, image, (long) result.frame * 1000000000 / PonderRenderer.FPS, TimeUnit.NANOSECONDS);
-			}
-		} catch (IOException e) {
-			CreatePonderWonder.LOGGER.error("Error writing image to channel", e);
+		synchronized (writer) {
+			writer.encodeVideo(0, result.image, (long) result.frame * 1000000000 / PonderRenderer.FPS, TimeUnit.NANOSECONDS);
 		}
 	}
 
