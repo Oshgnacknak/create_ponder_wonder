@@ -1,22 +1,24 @@
-package de.oshgnacknak.create_ponder_wonder;
+package de.oshgnacknak.create_ponder_wonder.renderer;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
+import de.oshgnacknak.create_ponder_wonder.util.ImgurUploader;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static de.oshgnacknak.create_ponder_wonder.RenderUtil.HEIGHT;
+import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.HEIGHT;
 
 public class ThreadVideoExporter implements AutoCloseable {
 	private final IMediaWriter writer;
-	private final ScheduledThreadPoolExecutor executor;
+	private final ThreadPoolExecutor executor;
 
 	public ThreadVideoExporter(Path pathToVideo) throws IOException {
 		// first create folder structure
@@ -89,6 +91,6 @@ public class ThreadVideoExporter implements AutoCloseable {
 			}
 		}
 		writer.close();
-		System.gc();
+		ImgurUploader.tryUpload(writer.getUrl());
 	}
 }

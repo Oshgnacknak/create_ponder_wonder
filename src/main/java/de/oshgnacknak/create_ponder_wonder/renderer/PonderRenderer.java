@@ -1,4 +1,4 @@
-package de.oshgnacknak.create_ponder_wonder;
+package de.oshgnacknak.create_ponder_wonder.renderer;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.simibubi.create.foundation.ponder.PonderScene;

@@ -1,4 +1,4 @@
-package de.oshgnacknak.create_ponder_wonder;
+package de.oshgnacknak.create_ponder_wonder.renderer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
+import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraftforge.common.util.Lazy;

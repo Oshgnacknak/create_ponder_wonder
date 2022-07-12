@@ -1,5 +1,6 @@
 package de.oshgnacknak.create_ponder_wonder;
 
+import de.oshgnacknak.create_ponder_wonder.renderer.PonderRenderScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -7,10 +8,9 @@ import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 
-@Mod(CreatePonderWonder.MODID)
+@Mod(BuildConfig.MODID)
 public class CreatePonderWonder {
-	public static final String MODID = "create_ponder_wonder";
-	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	public static final Logger LOGGER = LogManager.getLogger(BuildConfig.MODID);
 
 	public static final PonderRenderScheduler PONDER_RENDERER = new PonderRenderScheduler();
 

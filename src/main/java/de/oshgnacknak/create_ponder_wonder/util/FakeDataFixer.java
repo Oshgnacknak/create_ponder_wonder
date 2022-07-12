@@ -1,4 +1,4 @@
-package de.oshgnacknak.create_ponder_wonder;
+package de.oshgnacknak.create_ponder_wonder.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;

@@ -1,7 +1,8 @@
-package de.oshgnacknak.create_ponder_wonder;
+package de.oshgnacknak.create_ponder_wonder.renderer;
 
 import com.simibubi.create.foundation.ponder.PonderRegistry;
 import com.simibubi.create.foundation.ponder.PonderScene;
+import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,7 +39,7 @@ public class PonderRenderScheduler {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering) return;
 				videoExporter.addFrame(result);
-				System.out.println("Frame " + result.frame);
+				// System.out.println("Frame " + result.frame);
 			}
 			CreatePonderWonder.chat("Finished rendering Ponder: " + videoPath);
 			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", videoPath);

@@ -1,25 +1,33 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
         mavenCentral()
-        maven {url='https://repo.spongepowered.org/maven'}
-        maven { url='https://dist.creeper.host/Sponge/maven' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
+        maven { url = 'https://dist.creeper.host/Sponge/maven' }
+        maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 
+plugins {
+    id 'com.github.gmazzo.buildconfig' version '3.0.1'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
+apply from: 'https://raw.githubusercontent.com/LordGrimmauld/gitinfo-collect/master/build.gradle'
+
 
 version = "mc${minecraft_version}_v${mod_version}"
-group = "de.oshganknak.${modid}"
+group = "de.oshgnacknak.${modid}"
 archivesBaseName = "${modid}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -31,7 +39,8 @@ sourceSets {
 }
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    // mappings channel: 'official', version: minecraft_version
+    mappings channel: 'parchment', version: "2022.06.05-${minecraft_version}" // https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/parchment-1.18.2/
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -43,7 +52,7 @@ minecraft {
 
         client {
             workingDirectory project.file('run')
-            arg '-mixin.config=create_ponder_wonder.mixins.json'
+            arg "-mixin.config=${modid}.mixins.json"
             jvmArgs "-Dmixin.env.disableRefMap=true"
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
@@ -86,6 +95,9 @@ repositories {
     maven {
         url "https://www.dcm4che.org/maven2"
     }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
@@ -94,7 +106,8 @@ dependencies {
     implementation fg.deobf("com.simibubi.create:Create:mc1.18.2_v0.5.0+130")
 
     library 'xuggle:xuggle-xuggler:5.4'
-    // library 'org.bytedeco:javacv:1.5.7'
+    library 'org.apache.httpcomponents:httpclient:4.5.13'
+    library 'org.apache.httpcomponents:httpmime:4.5.13'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -103,16 +116,14 @@ compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {
-        attributes([
-            "Specification-Title": "${modid}",
-            "Specification-Vendor": "Oshgnacknak",
-            "Specification-Version": "1",
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"Oshgnacknak",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "${modid}.mixins.json"
-        ])
+        attributes(["Specification-Title"     : "${modid}",
+                    "Specification-Vendor"    : "Oshgnacknak",
+                    "Specification-Version"   : "1",
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : "${version}",
+                    "Implementation-Vendor"   : "Oshgnacknak",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    "MixinConfigs"            : "${modid}.mixins.json"])
     }
     from {
         configurations.library.collect { it.isDirectory() ? it : zipTree(it) }
@@ -131,9 +142,22 @@ tasks.withType(JavaCompile).configureEach {
 
 jar.finalizedBy('reobfJar')
 
+buildConfig {
+    buildConfigField 'String', 'MODID', "\"${modid}\""
+    buildConfigField 'String', 'VERSION', "\"${project.version}\""
+    buildConfigField "String", "GITHASH", "\"${getGitInfo()}\""
 
-jar {
-    archiveClassifier.set('slim')
+    def file = new File("imgur.properties")
+    if (!file.exists()) {
+        buildConfigField "String", "IMGUR_CLIENTID", "null"
+    } else {
+        file.withReader {
+            Properties props = new Properties()
+            props.load(it)
+            buildConfigField "String", "IMGUR_CLIENTID", "\"${props.client_id}\""
+        }
+    }
+
+    packageName = project.group
 }
-
 
