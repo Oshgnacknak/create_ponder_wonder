@@ -1,8 +1,8 @@
 package de.oshgnacknak.create_ponder_wonder;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.simibubi.create.foundation.ponder.PonderScene;
 
-import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
 public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, Iterator<PonderRenderer.RenderResult> {
@@ -11,8 +11,8 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 
 	private final PonderWonderUI ponder;
 	private final PonderScene ponderScene;
-	private int frame;
 	private final RenderUtil renderUtil;
+	private int frame;
 
 	public PonderRenderer(PonderScene ponder) {
 		this.ponder = new PonderWonderUI(ponder);
@@ -45,10 +45,10 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 	}
 
 	public static class RenderResult {
-		public final BufferedImage image;
+		public final NativeImage image;
 		public final int frame;
 
-		public RenderResult(BufferedImage image, int frame) {
+		public RenderResult(NativeImage image, int frame) {
 			this.image = image;
 			this.frame = frame;
 		}

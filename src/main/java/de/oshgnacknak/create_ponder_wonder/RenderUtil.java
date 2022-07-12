@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraftforge.common.util.Lazy;
 
-import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
 public class RenderUtil {
@@ -30,12 +29,14 @@ public class RenderUtil {
 	public RenderUtil() {
 	}
 
-	public static BufferedImage downloadToBuffer(RenderTarget renderTarget) {
+	public static NativeImage downloadToBuffer(RenderTarget renderTarget) {
 		NativeImage nativeimage = new NativeImage(WIDTH, HEIGHT, false);
 		nativeimage.format().setPackPixelStoreState();
 		RenderSystem.bindTexture(renderTarget.getColorTextureId());
 		GlStateManager._getTexImage(3553, 0, nativeimage.format().glFormat(), 5121, nativeimage.pixels);
+		return nativeimage;
 
+		/*
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
 		if (nativeimage.format().hasAlpha()) {
 			for (int x = 0; x < WIDTH; ++x) {
@@ -51,9 +52,10 @@ public class RenderUtil {
 
 		nativeimage.close();
 		return image;
+		 */
 	}
 
-	public BufferedImage render(Consumer<PoseStack> renderFunc) {
+	public NativeImage render(Consumer<PoseStack> renderFunc) {
 		lazyRenderTarget.get().clear(true);
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
