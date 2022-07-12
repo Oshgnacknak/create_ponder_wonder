@@ -3,9 +3,6 @@ package de.oshgnacknak.create_ponder_wonder;
 import com.simibubi.create.foundation.ponder.PonderRegistry;
 import com.simibubi.create.foundation.ponder.PonderScene;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;

@@ -1,12 +1,11 @@
 package de.oshgnacknak.create_ponder_wonder.mixin;
 
+import com.mojang.datafixers.DataFixer;
 import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
 import de.oshgnacknak.create_ponder_wonder.FakeDataFixer;
 import net.minecraft.util.datafix.DataFixers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-
-import com.mojang.datafixers.DataFixer;
 
 @Mixin(DataFixers.class)
 public class DataFixesManagerMixin {
