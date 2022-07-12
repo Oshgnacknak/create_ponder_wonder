@@ -2,23 +2,13 @@ package de.oshgnacknak.create_ponder_wonder;
 
 import com.simibubi.create.foundation.ponder.PonderRegistry;
 import com.simibubi.create.foundation.ponder.PonderScene;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IContainerFormat;
-import com.xuggle.xuggler.IRational;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class PonderRenderScheduler {
 	private boolean rendering;
@@ -62,35 +52,24 @@ public class PonderRenderScheduler {
 	}
 
 	private void saveFrames(PonderScene ponder, String basePath) {
+		Path videoPath;
 		try {
-			Path path = getOutPath(ponder, basePath);
-			final IMediaWriter writer = ToolFactory.makeWriter(path.resolve(ponder.getId().toString().replace(":", "_") + ".mp4").toString());
-
-			// We tell it we're going to add one video stream, with id 0,
-			// at position 0, and that it will have a fixed frame rate of FRAME_RATE.
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, IRational.make(PonderRenderer.FPS),  RenderUtil.WIDTH, RenderUtil.HEIGHT);
-
-
+			videoPath = getOutPath(ponder, basePath).resolve(ponder.getId().toString().replace(":", "_") + ".mp4");
+		} catch (IOException e) {
+			CreatePonderWonder.LOGGER.error("Error creating video path", e);
+			return;
+		}
+		try (ThreadVideoExporter videoExporter = new ThreadVideoExporter(videoPath)) {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering) return;
-				if (result.image == null) continue;
-				SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(180000); // roughly 180 kb per image
-				result.image.writeToChannel(channel);
-				BufferedImage image = convertToType(ImageIO.read(new ByteArrayInputStream(channel.array(), 0, (int) channel.size())), BufferedImage.TYPE_3BYTE_BGR);
-				writer.encodeVideo(0, image, (long) result.frame * 1000000000 / PonderRenderer.FPS, TimeUnit.NANOSECONDS);
-				// print frame number
+				videoExporter.addFrame(result);
 				System.out.println("Frame " + result.frame);
-				// result.image.writeToFile(path.resolve(String.format("%06d.png", result.frame)));
 			}
-			writer.close();
-			System.gc();
-
-			CreatePonderWonder.chat("Finished rendering Ponder: " + path);
-			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", path);
+			CreatePonderWonder.chat("Finished rendering Ponder: " + videoPath);
+			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", videoPath);
 		} catch (Exception e) {
 			CreatePonderWonder.chat("Error: " + e.getMessage());
-			CreatePonderWonder.LOGGER.error("Could not save image", e);
-			e.printStackTrace();
+			CreatePonderWonder.LOGGER.error("Could not save ponder", e);
 		}
 	}
 
