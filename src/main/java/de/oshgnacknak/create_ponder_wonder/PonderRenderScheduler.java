@@ -36,13 +36,7 @@ public class PonderRenderScheduler {
 	}
 
 	private void saveFrames(PonderScene ponder, String basePath) {
-		Path videoPath;
-		try {
-			videoPath = getOutPath(ponder, basePath).resolve(ponder.getId().toString().replace(":", "_") + ".mp4");
-		} catch (IOException e) {
-			CreatePonderWonder.LOGGER.error("Error creating video path", e);
-			return;
-		}
+		Path videoPath = Paths.get(basePath).resolve(ponder.getId().toString().replace(":", "_") + ".mp4");
 		try (ThreadVideoExporter videoExporter = new ThreadVideoExporter(videoPath)) {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering) return;
@@ -55,10 +49,6 @@ public class PonderRenderScheduler {
 			CreatePonderWonder.chat("Error: " + e.getMessage());
 			CreatePonderWonder.LOGGER.error("Could not save ponder", e);
 		}
-	}
-
-	private Path getOutPath(PonderScene ponder, String basePath) throws IOException {
-		return Files.createDirectories(Paths.get(basePath, CreatePonderWonder.MODID, ponder.getString("out")));
 	}
 
 	public void stop() {

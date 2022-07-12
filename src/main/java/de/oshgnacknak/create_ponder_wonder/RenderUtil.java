@@ -32,14 +32,11 @@ public class RenderUtil {
 
 	public static BufferedImage downloadToBuffer(RenderTarget renderTarget) {
 		NativeImage nativeimage = new NativeImage(WIDTH, HEIGHT, false);
-
-
 		nativeimage.format().setPackPixelStoreState();
 		RenderSystem.bindTexture(renderTarget.getColorTextureId());
 		GlStateManager._getTexImage(3553, 0, nativeimage.format().glFormat(), 5121, nativeimage.pixels);
 
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
-
 		if (nativeimage.format().hasAlpha()) {
 			for (int x = 0; x < WIDTH; ++x) {
 				for (int y = 0; y < HEIGHT; ++y) {
@@ -51,8 +48,9 @@ public class RenderUtil {
 				}
 			}
 		}
+
 		nativeimage.close();
-		return image; // fixme: testing
+		return image;
 	}
 
 	public BufferedImage render(Consumer<PoseStack> renderFunc) {
