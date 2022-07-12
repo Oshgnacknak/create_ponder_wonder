@@ -12,10 +12,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
@@ -29,17 +25,29 @@ archivesBaseName = "${modid}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
+sourceSets {
+    main.java.srcDir "src/main/java"
+    main.resources.srcDir 'src/main/resources'
+}
+
 minecraft {
     mappings channel: 'official', version: minecraft_version
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
+        all {
+            lazyToken('minecraft_classpath') {
+                configurations.shadow.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
+
         client {
             workingDirectory project.file('run')
             arg '-mixin.config=create_ponder_wonder.mixins.json'
             jvmArgs "-Dmixin.env.disableRefMap=true"
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            source sourceSets.main
 
             mods {
                 create_ponder_wonder {
@@ -54,12 +62,19 @@ compileJava {
     options.compilerArgs = ['-Xdiags:verbose']
 }
 
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-}
-
 mixin {
     add sourceSets.main, "${modid}.refmap.json"
+}
+
+configurations {
+    library
+    implementation.extendsFrom library
+}
+
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
 }
 
 repositories {
@@ -73,25 +88,13 @@ repositories {
     }
 }
 
-configurations {
-    shade
-}
-
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-0.6.3.81")
     implementation fg.deobf("com.simibubi.create:Create:mc1.18.2_v0.5.0+130")
 
-    // def xuggle = 'xuggle:xuggle-xuggler:5.4'
-    // implementation fg.deobf(xuggle)
-    // shade xuggle
-
-    implementation 'org.bytedeco:ffmpeg:5.0-1.5.7'
-    implementation 'org.bytedeco:javacv-platform:1.5.7'
-
-    // def jcodec = 'org.jcodec:jcodec:0.2.5'
-    // implementation jcodec
-    // shade jcodec
+    library 'xuggle:xuggle-xuggler:5.4'
+    // library 'org.bytedeco:javacv:1.5.7'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -111,20 +114,23 @@ jar {
             "MixinConfigs": "${modid}.mixins.json"
         ])
     }
+    from {
+        configurations.library.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
-shadowJar {
-    classifier = ''
-    configurations = [project.configurations.shade]
-    // relocate 'org.jcodec', "${group}.jcodec"
-    relocate 'com.xuggle', "${group}.xuggle"
-}
-
-reobf {
-    shadowJar {}
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+jar.finalizedBy('reobfJar')
+
 
 jar {
     archiveClassifier.set('slim')

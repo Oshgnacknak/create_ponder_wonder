@@ -5,6 +5,8 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.imageio.ImageIO;
+
 @Mod(CreatePonderWonder.MODID)
 public class CreatePonderWonder {
 	public static final String MODID = "create_ponder_wonder";
@@ -13,6 +15,7 @@ public class CreatePonderWonder {
 	public static final PonderRenderScheduler PONDER_RENDERER = new PonderRenderScheduler();
 
 	public CreatePonderWonder() {
+		ImageIO.setUseCache(false);
 	}
 
 	public static void chat(String msg) {
