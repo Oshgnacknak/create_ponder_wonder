@@ -5,8 +5,10 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
 import de.oshgnacknak.create_ponder_wonder.util.ImgurUploader;
+import org.lwjgl.system.MemoryUtil;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.HEIGHT;
+import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.WIDTH;
 
 public class ThreadVideoExporter implements AutoCloseable {
 	private final IMediaWriter writer;
@@ -26,7 +29,7 @@ public class ThreadVideoExporter implements AutoCloseable {
 
 		// then create the video
 		writer = ToolFactory.makeWriter(pathToVideo.toString());
-		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, IRational.make(PonderRenderer.FPS), RenderUtil.WIDTH, HEIGHT);
+		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, IRational.make(PonderRenderer.FPS), WIDTH, HEIGHT);
 		executor = new ScheduledThreadPoolExecutor(11);
 	}
 
@@ -58,26 +61,17 @@ public class ThreadVideoExporter implements AutoCloseable {
 		executor.submit(() -> encodeFrameToVideo(result));
 	}
 
-	private void encodeFrameToVideo(PonderRenderer.RenderResult result) {
-		if (result.image == null) return;
-		BufferedImage image = new BufferedImage(RenderUtil.WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
-		if (result.image.format().hasAlpha()) {
-			for (int x = 0; x < RenderUtil.WIDTH; ++x) {
-				for (int y = 0; y < HEIGHT; ++y) {
-					int i = result.image.getPixelRGBA(x, y);
-					int r = (i & 0xff) << 16;
-					int g = i & 0xff00;
-					int b = (i & 0xff0000) >> 16;
-					image.setRGB(x, HEIGHT - y - 1, r + b + g);
-				}
-			}
-		}
 
-		result.image.close();
+	private void encodeFrameToVideo(PonderRenderer.RenderResult result) {
+		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+		result.writeToRaster(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
 		synchronized (writer) {
 			writer.encodeVideo(0, image, (long) result.frame * 1000000000 / PonderRenderer.FPS, TimeUnit.NANOSECONDS);
 		}
+
+		image.flush();
+		MemoryUtil.nmemFree(result.image);
 	}
 
 	@Override
