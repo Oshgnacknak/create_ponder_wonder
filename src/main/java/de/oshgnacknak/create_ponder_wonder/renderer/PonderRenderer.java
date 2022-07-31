@@ -59,12 +59,17 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 			for (int x = 0; x < WIDTH; ++x) {
 				for (int y = 0; y < HEIGHT; ++y) {
 					int i = MemoryUtil.memGetInt(image + (x + (long) y * WIDTH) * COMPONENTS);
-					int baseAddress = (x + (HEIGHT - y - 1) * WIDTH) * COMPONENTS; // flip y: y = HEIGHT - y - 1
+					int baseAddress = (x + y * WIDTH) * COMPONENTS; // flip y: y = HEIGHT - y - 1
 					bytes[baseAddress + 2] = (byte) (i & 0xFF);
 					bytes[baseAddress + 1] = (byte) ((i & 0xFF00) >> 8);
 					bytes[baseAddress] = (byte) ((i & 0xFF0000) >> 16);
 				}
 			}
+		}
+
+		public byte[] writeToRawRaster(byte[] raster) {
+			MemoryUtil.memByteBuffer(image, WIDTH * HEIGHT * 3).get(0, raster);
+			return raster;
 		}
 	}
 }

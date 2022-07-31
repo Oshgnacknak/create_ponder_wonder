@@ -40,6 +40,7 @@ public class RenderUtil {
 
 	public static long downloadToBuffer(RenderTarget renderTarget) {
 		long pixels = MemoryUtil.nmemAlloc(BYTE_SIZE);
+		GL11.glFrontFace(GL11.GL_CW);
 		GL11.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
 		GL11.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
 		return pixels;
@@ -60,7 +61,9 @@ public class RenderUtil {
 
 		RenderSystem.viewport(0, 0, WIDTH, HEIGHT);
 		modelViewStack.setIdentity();
-		modelViewStack.translate(0, 0, -5000);
+		modelViewStack.translate(0, HEIGHT, -5000);
+		modelViewStack.scale(1, -1, 1);
+
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setProjectionMatrix(viewField);
 
