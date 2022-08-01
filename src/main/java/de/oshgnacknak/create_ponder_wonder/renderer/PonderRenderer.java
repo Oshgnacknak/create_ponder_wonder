@@ -17,6 +17,8 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 	private final RenderUtil renderUtil;
 	private int frame;
 
+	private static final Object GL_LOCK = new Object();
+
 	public PonderRenderer(PonderScene ponder) {
 		this.ponder = new PonderWonderUI(ponder);
 		ponderScene = ponder;
@@ -41,14 +43,16 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 			throw new NoSuchElementException("Ponder scene is done");
 
 		float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
-		RenderResult res = new RenderResult(renderUtil.render(ms ->
-				ponder.ponderWonderRenderWindow(ms, pt)), frame);
 
-		if (frame % 3 == 2) {
-			ponder.tick();
+
+		synchronized (GL_LOCK) {
+			RenderResult res = new RenderResult(renderUtil.render(ms -> ponder.ponderWonderRenderWindow(ms, pt)), frame);
+			if (frame % 3 == 2) {
+				ponder.tick();
+			}
+			frame++;
+			return res;
 		}
-		frame++;
-		return res;
 	}
 
 	public static class RenderResult {

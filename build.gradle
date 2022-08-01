@@ -115,6 +115,7 @@ dependencies {
 compileJava.options.encoding = 'UTF-8'
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(["Specification-Title"     : "${modid}",
                     "Specification-Vendor"    : "Oshgnacknak",
