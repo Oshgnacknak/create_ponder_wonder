@@ -64,7 +64,7 @@ public class ThreadVideoExporter implements AutoCloseable {
 
 	private void encodeFrameToVideo(PonderRenderer.RenderResult result) {
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
-		result.writeToRaster(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+		result.writeToRawRaster(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
 		synchronized (writer) {
 			writer.encodeVideo(0, image, (long) result.frame * 1000000000 / PonderRenderer.FPS, TimeUnit.NANOSECONDS);

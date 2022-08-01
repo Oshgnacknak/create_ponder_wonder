@@ -10,7 +10,7 @@ import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraftforge.common.util.Lazy;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.function.Consumer;
@@ -33,16 +33,16 @@ public class RenderUtil {
 	});
 	public static int COMPONENTS = 3;
 	public static final long BYTE_SIZE = WIDTH * (long) HEIGHT * COMPONENTS;
-	public static int PIXEL_FORMAT = GL11.GL_RGB;
+	public static int PIXEL_FORMAT = GL12.GL_BGR;
 
 	public RenderUtil() {
 	}
 
 	public static long downloadToBuffer(RenderTarget renderTarget) {
 		long pixels = MemoryUtil.nmemAlloc(BYTE_SIZE);
-		GL11.glFrontFace(GL11.GL_CW);
-		GL11.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
-		GL11.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
+		GL12.glFrontFace(GL12.GL_CW);
+		GL12.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
+		GL12.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
 		return pixels;
 	}
 
