@@ -26,7 +26,7 @@ public class PonderWonderUI {
 			renderWidgets.setAccessible(true);
 			ponderUIconstructor.setAccessible(true);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class PonderWonderUI {
 		try {
 			ui = ponderUIconstructor.newInstance(uis);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 		ui.init(Minecraft.getInstance(), (int) (RenderUtil.WIDTH / RenderUtil.SCALE), (int) (RenderUtil.HEIGHT / RenderUtil.SCALE));
 	}
@@ -52,7 +52,7 @@ public class PonderWonderUI {
 			renderWidgets.invoke(ui, ms, -10, -10, partialTicks);
 			ms.popPose();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package de.oshgnacknak.create_ponder_wonder.util;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
@@ -29,18 +28,19 @@ public class FakeDataFixer implements DataFixer {
 
 	private static class FakeSchema extends Schema {
 
+		@SuppressWarnings("deprecation")
 		public FakeSchema() {
 			super(SharedConstants.getCurrentVersion().getWorldVersion(), null);
 		}
 
 		@Override
 		public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
-			return ImmutableMap.of();
+			return Map.ofEntries();
 		}
 
 		@Override
 		public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
-			return ImmutableMap.of();
+			return Map.ofEntries();
 		}
 
 		@Override
@@ -50,7 +50,7 @@ public class FakeDataFixer implements DataFixer {
 
 		@Override
 		protected Map<String, Type<?>> buildTypes() {
-			return ImmutableMap.of();
+			return Map.ofEntries();
 		}
 
 		@Override

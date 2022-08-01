@@ -4,6 +4,7 @@ import com.simibubi.create.foundation.ponder.PonderScene;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.*;
 
@@ -35,6 +36,10 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 
 	@Override
 	public RenderResult next() {
+		// if there is no more elements, throw
+		if (!hasNext())
+			throw new NoSuchElementException("Ponder scene is done");
+
 		float pt = (frame % PonderRenderer.FPS) / (PonderRenderer.FPS / 3.0f);
 		RenderResult res = new RenderResult(renderUtil.render(ms ->
 				ponder.ponderWonderRenderWindow(ms, pt)), frame);
@@ -55,21 +60,8 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 			this.frame = frame;
 		}
 
-		public void writeToRaster(byte[] bytes) {
-			for (int x = 0; x < WIDTH; ++x) {
-				for (int y = 0; y < HEIGHT; ++y) {
-					int i = MemoryUtil.memGetInt(image + (x + (long) y * WIDTH) * COMPONENTS);
-					int baseAddress = (x + y * WIDTH) * COMPONENTS; // flip y: y = HEIGHT - y - 1
-					bytes[baseAddress + 2] = (byte) (i & 0xFF);
-					bytes[baseAddress + 1] = (byte) ((i & 0xFF00) >> 8);
-					bytes[baseAddress] = (byte) ((i & 0xFF0000) >> 16);
-				}
-			}
-		}
-
-		public byte[] writeToRawRaster(byte[] raster) {
-			MemoryUtil.memByteBuffer(image, WIDTH * HEIGHT * 3).get(0, raster);
-			return raster;
+		public void writeToRawRaster(byte[] raster) {
+			MemoryUtil.memByteBuffer(image, WIDTH * HEIGHT * COMPONENTS).get(0, raster);
 		}
 	}
 }

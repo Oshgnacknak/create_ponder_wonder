@@ -10,6 +10,7 @@ import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraftforge.common.util.Lazy;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.system.MemoryUtil;
 
@@ -23,26 +24,21 @@ public class RenderUtil {
 	public static final float SCALE = 3;
 	public static final int WIDTH = 1920;
 	public static final int HEIGHT = 1080;
-
-
+	public static final int COMPONENTS = 3;
+	public static final long BYTE_SIZE = WIDTH * (long) HEIGHT * COMPONENTS;
+	public static final int PIXEL_FORMAT = GL12.GL_BGR;
 	private static final Matrix4f viewField = Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, 0, 10000);
 	private static final Lazy<TextureTarget> lazyRenderTarget = Lazy.of(() -> {
 		TextureTarget renderTarget = new TextureTarget(WIDTH, HEIGHT, true, Minecraft.ON_OSX);
 		renderTarget.setClearColor(0, 0, 0, 0);
 		return renderTarget;
 	});
-	public static int COMPONENTS = 3;
-	public static final long BYTE_SIZE = WIDTH * (long) HEIGHT * COMPONENTS;
-	public static int PIXEL_FORMAT = GL12.GL_BGR;
-
-	public RenderUtil() {
-	}
 
 	public static long downloadToBuffer(RenderTarget renderTarget) {
 		long pixels = MemoryUtil.nmemAlloc(BYTE_SIZE);
-		GL12.glFrontFace(GL12.GL_CW);
-		GL12.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
-		GL12.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
+		GL11.glFrontFace(GL11.GL_CW);
+		GL11.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
+		GL11.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
 		return pixels;
 	}
 

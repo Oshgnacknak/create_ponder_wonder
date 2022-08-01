@@ -12,6 +12,9 @@ import static net.minecraft.commands.Commands.literal;
 
 @Mod.EventBusSubscriber(modid = BuildConfig.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AllCommands {
+	// no instances
+	private AllCommands() {
+	}
 
 	@SubscribeEvent
 	public static void register(RegisterCommandsEvent event) {

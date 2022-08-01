@@ -39,7 +39,6 @@ public class PonderRenderScheduler {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering) return;
 				videoExporter.addFrame(result);
-				// System.out.println("Frame " + result.frame);
 			}
 			CreatePonderWonder.chat("Finished rendering Ponder: " + videoPath);
 			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", videoPath);
