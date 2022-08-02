@@ -5,7 +5,7 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
 import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
-import de.oshgnacknak.create_ponder_wonder.util.ImgurUploader;
+import de.oshgnacknak.create_ponder_wonder.util.ThreadBufferWorker;
 import de.oshgnacknak.create_ponder_wonder.util.ThreadableTask;
 import org.lwjgl.system.MemoryUtil;
 
@@ -19,13 +19,14 @@ import java.util.concurrent.TimeUnit;
 import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.HEIGHT;
 import static de.oshgnacknak.create_ponder_wonder.renderer.RenderUtil.WIDTH;
 
-public class ThreadVideoExporter implements ThreadableTask<PonderRenderer.RenderResult> {
+public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.RenderResult> {
 	private final IMediaWriter writer;
 
 	private int frames = 0;
-	private long startTime;
+	private final long startTime;
 
 	public ThreadVideoExporter(Path pathToVideo) throws IOException {
+		super();
 		startTime = System.currentTimeMillis();
 		Files.createDirectories(pathToVideo.getParent());
 		writer = ToolFactory.makeWriter(pathToVideo.toString());
@@ -49,10 +50,10 @@ public class ThreadVideoExporter implements ThreadableTask<PonderRenderer.Render
 
 	@Override
 	public void close() {
-		ThreadableTask.super.close();
+		super.close();
 		writer.close();
 		// FPS
 		CreatePonderWonder.LOGGER.info("FPS: {}", (frames * 1000L / (System.currentTimeMillis() - startTime)));
-		ImgurUploader.tryUpload(writer.getUrl());
+		// ImgurUploader.tryUpload(writer.getUrl());
 	}
 }

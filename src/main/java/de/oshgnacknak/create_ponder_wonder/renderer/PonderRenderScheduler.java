@@ -36,10 +36,10 @@ public class PonderRenderScheduler {
 
 	private void saveFrames(PonderScene ponder, String basePath) {
 		Path videoPath = Paths.get(basePath).resolve(ponder.getId().toString().replace(":", "_") + ".mp4");
-		try (ThreadBufferWorker<PonderRenderer.RenderResult> videoExporter = new ThreadBufferWorker<>(11, new ThreadVideoExporter(videoPath))) {
+		try (ThreadBufferWorker<PonderRenderer.RenderResult> videoExporter = new ThreadVideoExporter(videoPath)) {
 			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
 				if (!rendering) return;
-				videoExporter.runTask(result);
+				videoExporter.submitTask(result);
 			}
 			CreatePonderWonder.chat("Finished rendering Ponder: " + videoPath);
 			CreatePonderWonder.LOGGER.info("Finished rendering Ponder: {}", videoPath);

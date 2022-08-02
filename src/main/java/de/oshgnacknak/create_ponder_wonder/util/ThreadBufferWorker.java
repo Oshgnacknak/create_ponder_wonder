@@ -3,21 +3,23 @@ package de.oshgnacknak.create_ponder_wonder.util;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class ThreadBufferWorker<T> implements AutoCloseable {
-	private ThreadableTask<T> taskConsumer;
-
+public abstract class ThreadBufferWorker<T> implements AutoCloseable {
 	private final ThreadPoolExecutor executor;
 
 	// constructor taking a taskConsumer of T and a thread number
-	public ThreadBufferWorker(int threadNumber, ThreadableTask<T> taskConsumer) {
+	protected ThreadBufferWorker(int threadNumber) {
 
-		this.taskConsumer = taskConsumer;
 		executor = new ScheduledThreadPoolExecutor(threadNumber);
 	}
 
-	public void runTask(T task) {
-		// FIXME
-		while (executor.getActiveCount() >= executor.getCorePoolSize()) {
+	// default constructor calculating thread number based on available processors (min(1, available processors-1))
+	protected ThreadBufferWorker() {
+		this(Math.min(1, Runtime.getRuntime().availableProcessors() - 1));
+	}
+
+	public void submitTask(T task) {
+		// FIXME work with promises
+		while (executor.getActiveCount() >= getThreadSize()) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
@@ -25,12 +27,19 @@ public class ThreadBufferWorker<T> implements AutoCloseable {
 			}
 		}
 
-		executor.submit(() -> taskConsumer.runTask(task));
+		executor.submit(() -> this.runTask(task));
+	}
+
+	public abstract void runTask(T task);
+
+	// get thread size
+	public int getThreadSize() {
+		return executor.getCorePoolSize();
 	}
 
 	@Override
 	public void close() {
-		// Fixme
+		// Fixme work with promises
 		while (executor.getActiveCount() > 0) {
 			try {
 				Thread.sleep(10);
@@ -39,7 +48,6 @@ public class ThreadBufferWorker<T> implements AutoCloseable {
 			}
 		}
 
-		taskConsumer.close();
 		executor.shutdown();
 	}
 }
