@@ -28,4 +28,8 @@ public class ReusableObjectBuffer<T> {
 			queue.add(object);
 		}
 	}
+
+	public void clear() {
+		queue.clear();
+	}
 }

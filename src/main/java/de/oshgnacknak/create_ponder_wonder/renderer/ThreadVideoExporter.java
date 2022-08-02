@@ -5,8 +5,8 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
 import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
+import de.oshgnacknak.create_ponder_wonder.util.ReusableObjectBuffer;
 import de.oshgnacknak.create_ponder_wonder.util.ThreadBufferWorker;
-import de.oshgnacknak.create_ponder_wonder.util.ThreadableTask;
 import org.lwjgl.system.MemoryUtil;
 
 import java.awt.image.BufferedImage;
@@ -25,19 +25,23 @@ public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.Rende
 	private int frames = 0;
 	private final long startTime;
 
+	private final ReusableObjectBuffer<BufferedImage> imageBuffer;
+
+
 	public ThreadVideoExporter(Path pathToVideo) throws IOException {
 		super();
 		startTime = System.currentTimeMillis();
 		Files.createDirectories(pathToVideo.getParent());
 		writer = ToolFactory.makeWriter(pathToVideo.toString());
 		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, IRational.make(PonderRenderer.FPS), WIDTH, HEIGHT);
+		imageBuffer = new ReusableObjectBuffer<>(getThreadSize(), () -> new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR));
 	}
 
 	@Override
 	public void runTask(PonderRenderer.RenderResult renderResult) {
 		frames++;
 
-		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage image = imageBuffer.get();
 		renderResult.writeToRawRaster(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
 		synchronized (writer) {
@@ -45,6 +49,7 @@ public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.Rende
 		}
 
 		image.flush();
+		imageBuffer.put(image);
 		MemoryUtil.nmemFree(renderResult.image);
 	}
 
@@ -54,6 +59,7 @@ public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.Rende
 		writer.close();
 		// FPS
 		CreatePonderWonder.LOGGER.info("FPS: {}", (frames * 1000L / (System.currentTimeMillis() - startTime)));
+		imageBuffer.clear();
 		// ImgurUploader.tryUpload(writer.getUrl());
 	}
 }
