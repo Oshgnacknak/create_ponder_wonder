@@ -55,14 +55,7 @@ public class PonderRenderer implements Iterable<PonderRenderer.RenderResult>, It
 		}
 	}
 
-	public static class RenderResult {
-		public final AllocatedByteBuffer image;
-		public final int frame;
-
-		public RenderResult(AllocatedByteBuffer image, int frame) {
-			this.image = image;
-			this.frame = frame;
-		}
+	public record RenderResult(AllocatedByteBuffer image, int frame) {
 
 		public void writeToRawRaster(byte[] raster) {
 			MemoryUtil.memByteBuffer(image.getAllocatedAddress(), (int) image.getSize()).get(0, raster);

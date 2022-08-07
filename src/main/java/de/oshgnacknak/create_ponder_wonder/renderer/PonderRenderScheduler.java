@@ -50,7 +50,7 @@ public class PonderRenderScheduler {
 
 	public void stop() {
 		if (!rendering) {
-			CreatePonderWonder.chat("Aleady stopped...");
+			CreatePonderWonder.chat("Already stopped...");
 			return;
 		}
 
@@ -61,8 +61,6 @@ public class PonderRenderScheduler {
 
 	private void finishRendering() {
 		rendering = false;
-		System.gc();
-
 		CreatePonderWonder.LOGGER.info("Stopped rendering ponders");
 		CreatePonderWonder.chat("Stopped rendering ponders");
 	}

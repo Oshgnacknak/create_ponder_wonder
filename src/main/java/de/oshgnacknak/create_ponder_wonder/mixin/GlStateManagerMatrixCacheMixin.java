@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import static com.mojang.blaze3d.platform.GlStateManager.setupLevelDiffuseLighting;
 
 @Mixin(GlStateManager.class)
-public class GiStateManagerMatrixCacheMixin {
+public class GlStateManagerMatrixCacheMixin {
 	private static final Matrix4f matrix4fCache = new Matrix4f();
 
 	static {

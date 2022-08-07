@@ -13,6 +13,6 @@
   },
   "minVersion": "0.8",
   "client": [
-    "GiStateManagerMatrixCacheMixin"
+    "GlStateManagerMatrixCacheMixin"
   ]
 }

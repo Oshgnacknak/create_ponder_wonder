@@ -13,18 +13,18 @@ import java.util.List;
 public class PonderWonderUI {
 	private static final Method renderVisibleScenes;
 	private static final Method renderWidgets;
-	private static final Constructor<PonderUI> ponderUIconstructor;
+	private static final Constructor<PonderUI> ponderUIConstructor;
 
 	static {
 		try {
 			renderVisibleScenes = PonderUI.class.getDeclaredMethod("renderVisibleScenes", PoseStack.class, int.class, int.class, float.class);
 			renderWidgets = PonderUI.class.getDeclaredMethod("renderWidgets", PoseStack.class, int.class, int.class, float.class);
-			ponderUIconstructor = PonderUI.class.getDeclaredConstructor(List.class);
+			ponderUIConstructor = PonderUI.class.getDeclaredConstructor(List.class);
 
 			// set stuff accessible
 			renderVisibleScenes.setAccessible(true);
 			renderWidgets.setAccessible(true);
-			ponderUIconstructor.setAccessible(true);
+			ponderUIConstructor.setAccessible(true);
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -37,7 +37,7 @@ public class PonderWonderUI {
 		List<PonderScene> uis = Collections.singletonList(scene);
 
 		try {
-			ui = ponderUIconstructor.newInstance(uis);
+			ui = ponderUIConstructor.newInstance(uis);
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}

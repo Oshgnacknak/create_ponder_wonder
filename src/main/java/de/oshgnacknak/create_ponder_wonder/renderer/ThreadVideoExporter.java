@@ -22,8 +22,8 @@ public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.Rende
 	private final IMediaWriter writer;
 	private final long startTime;
 	private final ReusableObjectBuffer<BufferedImage> imageBuffer;
-	private int frames = 0;
 	private final ReusableObjectBuffer<AllocatedByteBuffer> bytebuffers;
+	private int frames = 0;
 
 
 	public ThreadVideoExporter(Path pathToVideo) throws IOException {
@@ -46,10 +46,10 @@ public class ThreadVideoExporter extends ThreadBufferWorker<PonderRenderer.Rende
 
 		BufferedImage image = imageBuffer.get();
 		renderResult.writeToRawRaster(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
-		bytebuffers.put(renderResult.image);
+		bytebuffers.put(renderResult.image());
 
 		synchronized (writer) {
-			writer.encodeVideo(0, image, renderResult.frame * 1000000L / PonderRenderer.FPS, TimeUnit.MICROSECONDS);
+			writer.encodeVideo(0, image, renderResult.frame() * 1000000L / PonderRenderer.FPS, TimeUnit.MICROSECONDS);
 		}
 
 		image.flush();
