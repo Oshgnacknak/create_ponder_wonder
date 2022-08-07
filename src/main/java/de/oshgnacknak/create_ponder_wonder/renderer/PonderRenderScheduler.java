@@ -3,7 +3,6 @@ package de.oshgnacknak.create_ponder_wonder.renderer;
 import com.simibubi.create.foundation.ponder.PonderRegistry;
 import com.simibubi.create.foundation.ponder.PonderScene;
 import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
-import de.oshgnacknak.create_ponder_wonder.util.ThreadBufferWorker;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,8 +35,8 @@ public class PonderRenderScheduler {
 
 	private void saveFrames(PonderScene ponder, String basePath) {
 		Path videoPath = Paths.get(basePath).resolve(ponder.getId().toString().replace(":", "_") + ".mp4");
-		try (ThreadBufferWorker<PonderRenderer.RenderResult> videoExporter = new ThreadVideoExporter(videoPath)) {
-			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder)) {
+		try (ThreadVideoExporter videoExporter = new ThreadVideoExporter(videoPath)) {
+			for (PonderRenderer.RenderResult result : new PonderRenderer(ponder, videoExporter.getBytebuffers())) {
 				if (!rendering) return;
 				videoExporter.submitTask(result);
 			}

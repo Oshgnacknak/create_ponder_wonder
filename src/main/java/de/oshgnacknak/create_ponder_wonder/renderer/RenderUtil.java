@@ -7,12 +7,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import de.oshgnacknak.create_ponder_wonder.CreatePonderWonder;
+import de.oshgnacknak.create_ponder_wonder.util.AllocatedByteBuffer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraftforge.common.util.Lazy;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.system.MemoryUtil;
 
 import java.util.function.Consumer;
 
@@ -34,21 +34,20 @@ public class RenderUtil {
 		return renderTarget;
 	});
 
-	public static long downloadToBuffer(RenderTarget renderTarget) {
-		long pixels = MemoryUtil.nmemAlloc(BYTE_SIZE);
+	public static void downloadToBuffer(RenderTarget renderTarget, AllocatedByteBuffer buffer) {
+		buffer.assertSize(BYTE_SIZE);
 		GL11.glFrontFace(GL11.GL_CW);
 		GL11.glBindTexture(GL_TEXTURE_2D, renderTarget.getColorTextureId());
-		GL11.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, pixels);
-		return pixels;
+		GL11.glGetTexImage(GL_TEXTURE_2D, 0, PIXEL_FORMAT, GL_UNSIGNED_BYTE, buffer.getAllocatedAddress());
 	}
 
-	public long render(Consumer<PoseStack> renderFunc) {
+	public AllocatedByteBuffer render(Consumer<PoseStack> renderFunc, AllocatedByteBuffer buffer) {
 		lazyRenderTarget.get().clear(true);
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
 
 		RenderSystem.enableBlend();
-		RenderSystem.clear(0x4100, Minecraft.ON_OSX);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		lazyRenderTarget.get().bindWrite(true);
 		FogRenderer.setupNoFog();
 
@@ -78,6 +77,7 @@ public class RenderUtil {
 		RenderSystem.disableBlend();
 		modelViewStack.popPose();
 		RenderSystem.applyModelViewMatrix();
-		return downloadToBuffer(lazyRenderTarget.get());
+		downloadToBuffer(lazyRenderTarget.get(), buffer);
+		return buffer;
 	}
 }
